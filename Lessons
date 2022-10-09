@@ -1,0 +1,104 @@
+- Lesson 4
+
+select min(UnitPrice) as min_price, max(UnitPrice) as max_price, avg(UnitPrice) as avg_price
+from Products
+where CategoryID = 3
+
+select count (distinct ContactTitle) as uniq_proff
+from Customers
+where Country = 'UK'
+
+select sum(UnitPrice)
+from Products
+where CategoryID = 4 or CategoryID = 5 /*CategoryID in (4,5)*/
+
+- Lesson 5
+
+select City, count(*)
+from Customers
+group by City
+having count(*) > 4
+
+select CategoryID, avg(UnitPrice)
+from Products
+group by CategoryID
+order by avg(UnitPrice) desc
+
+select OrderDate, count(*)
+from Orders
+where OrderDate between '1998-03-01' and '1998-03-31'
+group by OrderDate
+having count(*) = 4
+
+select OrderID, sum(Quantity*UnitPrice*(1-Discount))
+from [Order Details]
+group by OrderID
+having sum(Quantity*UnitPrice*(1-Discount)) > 10000
+
+- Module 1
+
+select count(*) as count_cust
+from Customers
+where ContactTitle like '%Sales%' and Region is null
+
+select ContactTitle, count(*)
+from Customers
+group by ContactTitle
+order by count(*) desc
+
+select CategoryID, (max(UnitPrice) - min(UnitPrice))
+from Products
+group by CategoryID
+order by (max(UnitPrice) - min(UnitPrice)) desc
+
+select OrderID, sum(Quantity) 
+from [Order Details]
+group by OrderID
+order by sum(Quantity) desc
+
+select OrderID, sum(UnitPrice*Quantity*Discount)
+from [Order Details]
+group by OrderID
+having sum(UnitPrice*Quantity*Discount) > 3000
+
+- Lesson 7
+
+select count(*)
+from Employees as t1 inner join Orders as t2 on t1.EmployeeID = t2.EmployeeID
+where t1.FirstName = 'Andrew' and t1.LastName = 'Fuller'
+
+select sum(t2.UnitPrice*t2.Quantity*(1-t2.Discount))
+from Orders as t1 inner join [Order Details] as t2 on t1.OrderID = t2.OrderID
+where t1.OrderDate between '1997-01-01' and '1997-12-31'
+
+select t1.CategoryName, count(*)
+from Categories as t1 inner join Products as t2 on t1.CategoryID = t2.CategoryID
+group by t1.CategoryName
+
+select t1.FirstName, t1.LastName
+from Employees as t1 inner join Orders as t2 on t1.EmployeeID = t2.EmployeeID
+                     inner join Customers as t3 on t2.CustomerID = t3.CustomerID
+where t3.ContactName = 'Francisco Chang'
+
+Lesson 9
+
+select ContactName, City, OrderID
+from Customers as t1 left join Orders as t2 on t1.CustomerID = t2.CustomerID
+where OrderID is null
+
+- Lesson 10
+select count(*)
+from
+	(select Country, count(*) as cnt_clients
+	from Customers
+	group by Country
+	having count(*) > 1) as table1
+
+select count(*)
+from
+	(select CustomerID, count(*) as cnt_client
+	from Orders
+	group by CustomerID
+	having count(*) > 10) as table1
+
+
