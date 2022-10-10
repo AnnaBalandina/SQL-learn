@@ -101,4 +101,82 @@ from
 	group by CustomerID
 	having count(*) > 10) as table1
 
+- Module 2
+select count(t2.OrderID)
+from Products as t1 inner join [Order Details] as t2 on t1.ProductID = t2.ProductID
+where ProductName = 'Chocolade'
 
+select sum(t1.UnitPrice * t1.Quantity * (1-t1.Discount))
+from [Order Details] as t1 inner join Products as t2 on t1.ProductID = t2.ProductID
+						   inner join Categories as t3 on t2.CategoryID = t3.CategoryID
+where CategoryName = 'Confections'
+
+select t3.CategoryName, sum(t1.UnitPrice * t1.Quantity * (1-t1.Discount))
+from [Order Details] as t1 inner join Products as t2 on t1.ProductID = t2.ProductID
+						   inner join Categories as t3 on t2.CategoryID = t3.CategoryID
+group by t3.CategoryName
+order by sum(t1.UnitPrice * t1.Quantity * (1-t1.Discount)) desc
+
+select t3.FirstName, t3.LastName
+from Customers as t1 inner join Orders as t2 on t1.CustomerID = t2.CustomerID
+                     inner join Employees as t3 on t2.EmployeeID = t3.EmployeeID
+where t1.ContactName = 'Simon Crowther' and t2.OrderDate = '1998-04-29'
+
+select count(*)
+from
+	(select ShipCity, count(*) as line1
+	from Orders
+	where OrderDate between '1997-01-01' and '1997-12-31'
+	group by ShipCity
+	having count(*) > 5) as table1
+
+-Lesson 11
+
+select count(*)
+from
+	(select FirstName, LastName, Country, case when Region is null then 'not defined' else region end as Region
+	from Employees) as table1
+where Region = 'not defined'
+
+select gender, count(*)
+from
+	(select FirstName, LastName, TitleOfCourtesy, case when TitleOfCourtesy in ('Ms.', 'Mrs.') then 'Women' 
+														when TitleOfCourtesy = 'Mr.' then 'Men'
+														else '!Need to be clariefied!' end as Gender
+	from Employees) as table1
+group by Gender
+
+select SegmPrice, count(*)
+from
+		(select ProductName, UnitPrice,
+				case when UnitPrice < 10.0 then '0-9.99'
+				when UnitPrice > 9.99 and UnitPrice < 30.0 then '10-29.99'
+				when UnitPrice > 29.99 and UnitPrice < 50.0 then '30-49.99'
+				else '50+' end as SegmPrice
+		from Products) as table1
+group by SegmPrice
+
+- Lesson 12
+
+select round(sum(UnitPrice*Quantity*(1-Discount)), 0)
+from [Order Details] as t1 inner join Orders as t2 on t1.OrderID = t2.OrderID
+where OrderDate between '1996-01-01' and '1996-12-31'
+
+select Quartal, count(*)
+from
+	(select OrderID, case when OrderDate between '1997-01-01' and '1997-03-31' then '1 quartal'
+				when OrderDate between '1997-04-01' and '1997-06-30' then '2 quartal'
+				when OrderDate between '1997-07-01' and '1997-09-30' then '3 quartal'
+				else '4 quartal' end as Quartal
+	from Orders 
+	where OrderDate between '1997-01-01' and '1997-12-31') as table1
+group by Quartal
+
+
+select OrderDate, ShippedDate, DATEDIFF(day, ShippedDate, OrderDate)
+from Orders
+order by DATEDIFF(day, ShippedDate, OrderDate) 
+
+select Country, len(Country)
+from Customers
+where len(Country) > 10
