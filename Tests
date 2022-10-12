@@ -27,3 +27,23 @@ from (SELECT   date, row_number() over (partition by  item order by date desc) a
 where rw = 2   
 ) as t2 on t1.item = t2.item 
 
+LFL по продажам за текущую и 2 предыдущие недели
+
+SELECT t1.unit_id as unut_id, t1.currentWeek as currentWeek, t2.LastWeek as lastWeek, t3.WeekBeforeLast as weekBeforeLast 
+ from   
+    (select unit_id, sum(valuerub) as currentWeek
+    from  test_task.sales_data
+    where date BETWEEN '2022-09-30' and '2022-10-07'
+    group by unit_id
+    LIMIT 1000) as t1 inner join (
+        select unit_id, sum(valuerub) as LastWeek
+        from  test_task.sales_data
+        where date BETWEEN '2022-09-23' and '2022-09-30'
+        group by unit_id
+        LIMIT 1000) as t2 on t1.unit_id = t2.unit_id
+        inner join (select unit_id, sum(valuerub) as WeekBeforeLast
+                    from  test_task.sales_data
+                    where date BETWEEN '2022-09-16' and '2022-09-23'
+                    group by unit_id
+                    LIMIT 1000) as t3 on t1.unit_id = t3.unit_id
+
