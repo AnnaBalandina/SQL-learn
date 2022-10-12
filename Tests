@@ -1,0 +1,29 @@
+Последняя цена на товар
+SELECT date, item, price_rub
+from (SELECT   date, row_number() over (partition by  item order by date desc) as rw,   item,  price_rub
+FROM test_task.price_change
+WHERE  price_type = 'fb5d4f01-8e2f-11ec-baa0-d257662de641' and   date <= '2022-10-01' 
+ORDER BY  item,  date DESC
+LIMIT 1000) 
+WHERE rw = 1
+
+Последняя и предпоследняя цена на товар
+ 
+select date as Date, item, price, prev_price
+from (
+    SELECT date, item, price_rub as price
+from (SELECT   date, row_number() over (partition by  item order by date desc) as rw,   item,  price_rub
+    FROM test_task.price_change
+    WHERE  price_type = 'fb5d4f01-8e2f-11ec-baa0-d257662de641' and   date <= '2022-10-01' 
+    ORDER BY  item,  date DESC
+    LIMIT 1000) as table1
+where rw = 1 ) as t1 inner join (
+   SELECT item, price_rub as prev_price
+from (SELECT   date, row_number() over (partition by  item order by date desc) as rw,   item,  price_rub
+    FROM test_task.price_change
+    WHERE  price_type = 'fb5d4f01-8e2f-11ec-baa0-d257662de641' and   date <= '2022-10-01' 
+    ORDER BY  item,  date DESC
+    LIMIT 1000) as table1
+where rw = 2   
+) as t2 on t1.item = t2.item 
+
